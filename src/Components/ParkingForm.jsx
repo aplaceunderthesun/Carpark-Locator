@@ -1,52 +1,49 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@mui/material';
-import { TextField } from '@mui/material';
+
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+
+// import TableForm from './TableForm'
 
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
 
-const Parking = () => {
+const ParkingForm = (props) => {
     const [inputInfo, setInputInfo] = useState();
     const [toggleEffect, setToggleEffect] = useState(true);
-
     const [carparkDetails, setCarparkDetails] = useState([]);
-    const [overallDetails, setOverallDetails] = useState({
-        carpark: "",
-        category: "",
-        saturdayRate: "",
-        sundayPublicRates: "",
-        weekdaysRateOne: "",
-        weekdaysRateTwo: "",
-    })
-//////////////////////////////////////////////////
-//////////////////////////////////////////////////
-//Toggle Effects to activate API call
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
 
-        console.log(typeof { inputInfo })
-        console.log('handleSubmit', inputInfo)
 
-        if (toggleEffect === true){
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+
+
+    const locationTest = (data) => {
+        console.log('DATA', typeof data)
+        setInputInfo("Orchard Plaza")
+
+        if (toggleEffect === true) {
             setToggleEffect(false);
         }
-        else if (toggleEffect === false){
+        else if (toggleEffect === false) {
             setToggleEffect(true)
         }
 
+
     }
 
-///////////////////////////////////////////////
-//Send input data into inputInfo
 
-    const updateHandler = (event) => {
-        console.log("eventtarget", event.target.value)
-        setInputInfo(event.target.value)
-    }
+    ///////////////////////////////////////////////
+    ///////////////////////////////////////////////
+    //Making the API call using inputInfo 
 
-///////////////////////////////////////////////
-//Making the API call using inputInfo 
 
     useEffect(() => {
 
@@ -54,74 +51,85 @@ const Parking = () => {
             fetch(`https://data.gov.sg/api/action/datastore_search?resource_id=85207289-6ae7-4a56-9066-e6090a3684a5&q=${inputInfo}`)
                 .then((res) => res.json())
                 .then((data) => {
-                    console.log('checking Data', data.result.records)
-                    console.log("carparkData", data)
-                    setCarparkDetails(data.result.records)
+                    console.log('CHECKING DATA RETRIVED', data.result.records)
+                    console.log("CARPARK DATA", data)
+
+                    const information = data.result.records;
+                    for (let i = 0; i < information.length; i++) {
+                        if (inputInfo === information[i].carpark) {
+                            setCarparkDetails(information[i])
+                        }
+                    }
                 })
         }
         makeApiCall();
     }, [toggleEffect])
 
-///////////////////////////////////////////////
-//Sending Parking Rates into overDetails onClick 
+    ///////////////////////////////////////////////
+    ///////////////////////////////////////////////
 
-    const selectLocation = (index) => {
-        console.log('elements', index.target.className)
-        console.log('Prices', carparkDetails[index.target.className].saturday_rate)
+    const carpark = (carparkDetails.carpark)
+    const weekdayOne = (carparkDetails.weekdays_rate_1)
+    const weekdayTwo = (carparkDetails.weekdays_rate_2)
+    const saturday = (carparkDetails.saturday_rate)
+    const sunPh = (carparkDetails.sunday_publicholiday_rate)
 
-        setOverallDetails({
-            carpark: carparkDetails[index.target.className].carpark,
-            category: carparkDetails[index.target.className].category,
-            saturdayRate: carparkDetails[index.target.className].saturday_rate,
-            sundayPublicRates: carparkDetails[index.target.className].sunday_publicholiday_rate,
-            weekdaysRateOne: carparkDetails[index.target.className].weekdays_rate_1,
-            weekdaysRateTwo: carparkDetails[index.target.className].weekdays_rate_2,
-        })
+    ///////////////////////////////////////////////
+    ///////////////////////////////////////////////
+    //Send to ParkingForm component
 
+    function createData(name, carpark) {
+        return { name, carpark };
     }
 
+    const rows = [
+        createData('Weekday 1', weekdayOne),
+        createData('Weekday 2', weekdayTwo),
+        createData('Saturday', saturday),
+        createData('Sunday/PH', sunPh),
+
+    ];
+
+
+    ///////////////////////////////////////////////
+    ///////////////////////////////////////////////
 
     return (
-        <div>
-            <div className="inputContainer">
-                <div className="ParkingDetails">
-                    <h1>Check Parking Rates</h1>
-                    <TextField
-                        type="text"
-                        className="formDetails"
-                        placeholder={"Find Place"}
-                        value={inputInfo}
-                        onChange={updateHandler}
-                        style={{ width: "400px", height: "20px" }}
-                    />
-                    <Button variant="contained"
-                        type="submit"
-                        className="buttonSubmit"
-                        onClick={handleSubmit}
-                        size="large"
-                    >Submit</Button>
-                </div>
+        <div className="parkingRates">
+            <div className="parkingRates">
+                <br />
+                <Button variant="outlined" style={{ width: "400px", height: "50px" }}
+                    onClick={() => locationTest(props.info)}>Show Parking Rates</Button>
             </div>
-            <div className="detailsContainer">
-                <div className="mapFunction">
-                    {carparkDetails.map((elements, index) => {
-                        return (
-                            <div>
-                                <br />
-                                <h4 type="button" variant="outlined" key={index} className={index} onClick={selectLocation}>{elements.carpark}</h4>
-                            </div>
-                        )
-                    })}
-                </div>
-                <div className="parkingRates">
-                    <p>WEEKDAY {overallDetails.weekdaysRateOne}</p>
-                </div>
+            <div className="parkingRatesContainer" >
+                <TableContainer component={Paper} style={{ maxWidth: "800px" }}>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Rates</TableCell>
+                                <TableCell align="right">{carpark}</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {rows.map((row) => (
+                                <TableRow
+                                    key={row.name}
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell component="th" scope="row">
+                                        {row.name}
+                                    </TableCell>
+                                    <TableCell align="right">{row.carpark}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                {/* <ParkingForm weekOne={weekdayOne} weekTwo={weekdayTwo} sat={saturday} sun={sunPh} parking={carpark} /> */}
             </div>
         </div>
-
-
     )
 
 }
 
-export default Parking;
+export default ParkingForm;

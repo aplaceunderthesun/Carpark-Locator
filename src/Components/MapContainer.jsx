@@ -5,22 +5,27 @@ import {
     GoogleMap,
     Marker,
 } from "react-google-maps";
-import { useState} from 'react'
+import { useState } from 'react'
 import Geocode from 'react-geocode'
+import { Typography } from '@mui/material';
+import { useEffect } from 'react'
+import AutoComplete from 'react-google-autocomplete'
+import ParkingForm from './ParkingForm'
+
 
 
 
 Geocode.setApiKey(`${process.env.REACT_APP_API_KEY}`)
 
 const MapContainer = () => {
-
+    const [inputAuto, setInputAuto] = useState();
     const [currentPosition, setCurrentPosition] = useState({
         address: "",
         streetNumber: "",
         route: "",
         neighbourhood: "",
         country: "",
-        zoom: 8,
+        zoom: 16,
         height: 800,
         mapPosition: {
             lat: 1.290270,
@@ -103,7 +108,7 @@ const MapContainer = () => {
                     route: (route) ? route : "",
                     neighbourhood: (neighbourhood) ? neighbourhood : "",
                     country: (country) ? country : "",
-                    zoom: 13,
+                    zoom: 16,
                     height: 800,
                     mapPosition: {
                         lat: newLat,
@@ -122,50 +127,68 @@ const MapContainer = () => {
             })
     };
 
-    // useEffect(() => {
-    //     if (navigator.geolocation) {
-    //         navigator.geolocation.getCurrentPosition(position => {
-    //             setCurrentPosition({
-    //                 mapPosition: {
-    //                     lat: position.coords.latitude,
-    //                     lng: position.coords.longitude
-    //                 },
-    //                 markerPosition: {
-    //                     lat: position.coords.latitude,
-    //                     lng: position.coords.longitude
-    //                 }
+    const onPlaceSelected = (place) => {
+        const address = place.formatted_address;
+        const addressArray = place.address_components;
 
-    //             }, () => {
-    //                 Geocode.fromLatLng(position.coords.latitude, position.coords.longitude)
-    //                     .then(res => {
-    //                         console.log('response', res)
-    //                         const address = res.results[0].formatted_address;
-    //                         const addressArray = res.results[0].address_components;
-    //                         const streetNumber = getStreet(addressArray);
-    //                         const route = getRoute(addressArray);
-    //                         const neighbourhood = getNeighbourhood(addressArray);
-    //                         const country = getCountry(addressArray);
-    //                         console.log("route", route)
+        const streetNumber = getStreet(addressArray);
+        const route = getRoute(addressArray);
+        const neighbourhood = getNeighbourhood(addressArray);
+        const country = getCountry(addressArray);
 
-    //                         setCurrentPosition({
-    //                             address,
-    //                             streetNumber,
-    //                             route,
-    //                             neighbourhood,
-    //                             country,
-    //                             zoom: 15,
-    //                             height: 400,
-    //                         })
-    //                     })
-    //             })
-    //         })
-    //     }
+        console.log(address);
+        console.log(addressArray);
+        console.log(streetNumber,route, neighbourhood);
 
-    // })
+        const newLat = (place.geometry.location.lat());
+        const newLng = (place.geometry.location.lng());
 
-    const MapWithAMarker = withScriptjs(withGoogleMap(props => (
+        console.log(place.geometry.location.lat());
+        console.log('input',place)
+
+
+        setCurrentPosition({
+            address: (address) ? address : "",
+            streetNumber: (streetNumber) ? streetNumber : "",
+            route: (route) ? route : "",
+            neighbourhood: (neighbourhood) ? neighbourhood : "",
+            country: (country) ? country : "",
+            zoom: 16,
+            height: 800,
+            mapPosition: {
+                lat: newLat,
+                lng: newLng
+            },
+            markerPosition: {
+                lat: newLat,
+                lng: newLng
+            }
+        }
+        )
+
+    }
+
+    ///////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////
+
+    let locationTwo = ""
+    
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const location = (event.target.value)
+        locationTwo = location
+        console.log('Location', location)
+        console.log('LocationTWo',locationTwo)
+    }
+
+
+    
+    ///////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////
+
+    const AsyncMap = withScriptjs(withGoogleMap(props => (
         <GoogleMap
-            defaultZoom={13}
+            defaultZoom={16}
             defaultCenter={{ lat: currentPosition.mapPosition.lat, lng: currentPosition.mapPosition.lng }}
         >
             <Marker
@@ -173,26 +196,41 @@ const MapContainer = () => {
                 draggable={true}
                 onDragEnd={(event) => onMarkerDragEnd(event)}
             >
+
                 <InfoWindow>
-                    <div>{currentPosition.address}</div>
+                    <h3>{currentPosition.address}</h3>
                 </InfoWindow>
             </Marker>
+            <AutoComplete
+            apiKey={process.env.REACT_APP_API_KEY}
+            style={{ width: "100%", height: "40px" }}
+            placeholder="Enter Your Address"
+            options={{
+                types: ["geocode", "establishment"],
+            }}
+            onPlaceSelected={(place) => onPlaceSelected(place)}
+            onChange={handleSubmit}
+            
+        />
         </GoogleMap>
     )));
 
 
-
+console.log("RANDOM LT", locationTwo)
 
     return (
         <div>
+            <Typography variant="h2">{"ParkWhere"}</Typography>
             <div>
-                <MapWithAMarker
-                    googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_API_KEY}&v=3.exp&libraries=geometry,drawing,places`}
+                <AsyncMap
+                    googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_API_KEY}&libraries=places`}
                     loadingElement={<div style={{ height: `100%` }} />}
                     containerElement={<div style={{ height: `500px` }} />}
                     mapElement={<div style={{ height: `100%` }} />}
                 />
             </div>
+            <br /><br />
+            <ParkingForm info={locationTwo}/>
         </div>
     )
 
