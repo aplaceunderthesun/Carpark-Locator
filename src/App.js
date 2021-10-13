@@ -1,22 +1,17 @@
-import logo from './logo.svg';
 import './App.css';
-import MapContainer from './MapContainer'
-import Parking from './Parking'
-import Autocomplete from 'react-google-autocomplete'
+import MapContainer from './Components/MapContainer'
+import Parking from './Components/ParkingForm'
+import Auto from './Components/Auto'
+import { Typography } from '@mui/material';
 
 
 const App = () => {
+
   return (
     <div className="App">
-      <h1>ParkWhere</h1>
+      <Typography variant="h2">{"ParkWhere"}</Typography>
       <MapContainer />
-      <Autocomplete
-        apiKey={process.env.REACT_APP_API_KEY}
-        style={{ width: "800px", height: "40px" }}
-        onPlaceSelected={(place) => {
-          console.log(place);
-        }}
-      />
+      <Auto />
       <Parking />
     </div>
   );

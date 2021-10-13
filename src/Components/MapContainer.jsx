@@ -5,10 +5,9 @@ import {
     GoogleMap,
     Marker,
 } from "react-google-maps";
-import { useState, useEffect } from 'react'
+import { useState} from 'react'
 import Geocode from 'react-geocode'
-import Parking from './Parking'
-import { Autocomplete } from 'react-google-autocomplete'
+
 
 
 Geocode.setApiKey(`${process.env.REACT_APP_API_KEY}`)
@@ -22,7 +21,7 @@ const MapContainer = () => {
         neighbourhood: "",
         country: "",
         zoom: 8,
-        height: 500,
+        height: 800,
         mapPosition: {
             lat: 1.290270,
             lng: 103.851959
@@ -105,7 +104,7 @@ const MapContainer = () => {
                     neighbourhood: (neighbourhood) ? neighbourhood : "",
                     country: (country) ? country : "",
                     zoom: 13,
-                    height: 500,
+                    height: 800,
                     mapPosition: {
                         lat: newLat,
                         lng: newLng
@@ -166,7 +165,7 @@ const MapContainer = () => {
 
     const MapWithAMarker = withScriptjs(withGoogleMap(props => (
         <GoogleMap
-            defaultZoom={12}
+            defaultZoom={13}
             defaultCenter={{ lat: currentPosition.mapPosition.lat, lng: currentPosition.mapPosition.lng }}
         >
             <Marker
@@ -190,7 +189,7 @@ const MapContainer = () => {
                 <MapWithAMarker
                     googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_API_KEY}&v=3.exp&libraries=geometry,drawing,places`}
                     loadingElement={<div style={{ height: `100%` }} />}
-                    containerElement={<div style={{ height: `400px` }} />}
+                    containerElement={<div style={{ height: `500px` }} />}
                     mapElement={<div style={{ height: `100%` }} />}
                 />
             </div>
