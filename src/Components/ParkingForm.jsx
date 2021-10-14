@@ -43,12 +43,12 @@ const ParkingForm = (props) => {
             fetch(`https://data.gov.sg/api/action/datastore_search?resource_id=85207289-6ae7-4a56-9066-e6090a3684a5&q=${inputInfo}`)
                 .then((res) => res.json())
                 .then((data) => {
-                    console.log('CHECKING DATA RETRIVED', data.result.records)
-                    console.log("CARPARK DATA", data)
-
+                    console.log('CHECKING DATA RETRIVED', typeof data.result.records)
+                    console.log("CARPARK DATA", data.result.records[0])
                     const information = data.result.records;
+
                     for (let i = 0; i < information.length; i++) {
-                        if (inputInfo === information[i].carpark) {
+                        if (((information[i].carpark).toLowerCase()).includes((inputInfo).toLowerCase())) {
                             setCarparkDetails(information[i])
                         }
                     }

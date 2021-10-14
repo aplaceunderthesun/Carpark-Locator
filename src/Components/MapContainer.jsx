@@ -10,6 +10,7 @@ import Geocode from 'react-geocode'
 import { Typography } from '@mui/material';
 import AutoComplete from 'react-google-autocomplete'
 import ParkingForm from './ParkingForm'
+import MallDetails from './MallDetails'
 
 ////////////////////////////////////////////////////////////////////
 
@@ -237,6 +238,7 @@ const MapContainer = () => {
             </div>
             <br /><br />
             <ParkingForm info={googleRef?.current?.value}/>
+            <MallDetails info={googleRef?.current?.value}/>
         </div>
     )
 
