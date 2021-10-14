@@ -2,18 +2,10 @@ import './App.css';
 import MapContainer from './Components/MapContainer'
 import { Route, Link } from "react-router-dom";
 import { Button, ButtonGroup } from '@mui/material';
-import { useState } from 'react'
 
-
+////////////////////////////////////////////////////////////////////
 
 const App = () => {
-
-
-  const [getAutocomplete, setGetAutoComplete] = useState()
-
-   const onGetAutoComplete = (info) => {
-    setGetAutoComplete(info)
-   }
 
   return (
     <div className="App">

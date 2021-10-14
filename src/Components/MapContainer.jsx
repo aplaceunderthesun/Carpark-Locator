@@ -8,12 +8,10 @@ import {
 import { useState } from 'react'
 import Geocode from 'react-geocode'
 import { Typography } from '@mui/material';
-import { useEffect } from 'react'
 import AutoComplete from 'react-google-autocomplete'
 import ParkingForm from './ParkingForm'
 
-
-
+////////////////////////////////////////////////////////////////////
 
 Geocode.setApiKey(`${process.env.REACT_APP_API_KEY}`)
 
@@ -38,8 +36,9 @@ const MapContainer = () => {
     }
     );
 
-    ///////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+    //Getting the Data from the selected coordinates of the Marker 
 
     const getStreet = (addressArray) => {
         let street = '';
@@ -81,16 +80,15 @@ const MapContainer = () => {
         }
     }
 
-    ///////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////
-
-
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+    //1. Getting the Lat and Lng from the Map
+    //2. Linking with Google Maps Geocode API to retrive the information
+    //3. Pushing information into CurrentPosition
 
     const onMarkerDragEnd = (event) => {
         let newLat = event.latLng.lat();
         let newLng = event.latLng.lng();
-
-        //Geocode helps to translate coordinates into address information
 
         Geocode.fromLatLng(newLat, newLng)
             .then(res => {
@@ -127,7 +125,14 @@ const MapContainer = () => {
             })
     };
 
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+    //1. Getting the information of selected destination from Google Maps Places Autocomplete API
+    //2. Pushing information into CurrentPosition
+
+
     const onPlaceSelected = (place) => {
+
         const address = place.formatted_address;
         const addressArray = place.address_components;
 
@@ -145,7 +150,6 @@ const MapContainer = () => {
 
         console.log(place.geometry.location.lat());
         console.log('input',place)
-
 
         setCurrentPosition({
             address: (address) ? address : "",
@@ -168,23 +172,28 @@ const MapContainer = () => {
 
     }
 
-    ///////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+//Sending input text into ParkingForm
+//I tried to use useState but it triggers a submit each time.
 
-    let locationTwo = ""
+    let locationTwo = []
     
     const handleSubmit = (event) => {
         event.preventDefault();
         const location = (event.target.value)
-        locationTwo = location
+
         console.log('Location', location)
         console.log('LocationTWo',locationTwo)
+        locationTwo.push(location)
+        // setInputAuto(location)
     }
 
-
+console.log('L2',locationTwo)
     
-    ///////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+//Creating Google Maps Visuals
 
     const AsyncMap = withScriptjs(withGoogleMap(props => (
         <GoogleMap
@@ -195,6 +204,9 @@ const MapContainer = () => {
                 position={{ lat: currentPosition.mapPosition.lat, lng: currentPosition.mapPosition.lng }}
                 draggable={true}
                 onDragEnd={(event) => onMarkerDragEnd(event)}
+                icon={{url: "https://i.ibb.co/8NPgBW0/Car-Marker2.png",
+                scaledSize: {height:50, width: 50}
+                }}
             >
 
                 <InfoWindow>
@@ -209,14 +221,11 @@ const MapContainer = () => {
                 types: ["geocode", "establishment"],
             }}
             onPlaceSelected={(place) => onPlaceSelected(place)}
-            onChange={handleSubmit}
+            onSubmit={handleSubmit}
             
         />
         </GoogleMap>
     )));
-
-
-console.log("RANDOM LT", locationTwo)
 
     return (
         <div>
