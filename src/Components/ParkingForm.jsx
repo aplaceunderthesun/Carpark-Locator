@@ -16,8 +16,10 @@ const ParkingForm = (props) => {
 
 
     const locationTest = (data) => {
-        console.log('DATA', typeof data)
-        setInputInfo("Plaza Singapura")
+        console.log('DATA', data)
+        console.log('SPLITDATA', data.split(", "))
+        console.log('MALL',data.split(", ")[1])
+        setInputInfo(data.split(", ")[1])
 
         if (toggleEffect === true) {
             setToggleEffect(false);
@@ -75,7 +77,7 @@ const ParkingForm = (props) => {
             <div className="parkingRates">
                 <br />
                 <Button variant="outlined" style={{ width: "400px", height: "50px" }}
-                    onClick={locationTest}>Show Parking Rates</Button>
+                    onClick={()=>locationTest(props.info)}>Show Parking Rates</Button>
             </div>
             <div className="parkingRatesContainer" >
 

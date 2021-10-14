@@ -5,7 +5,7 @@ import {
     GoogleMap,
     Marker,
 } from "react-google-maps";
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Geocode from 'react-geocode'
 import { Typography } from '@mui/material';
 import AutoComplete from 'react-google-autocomplete'
@@ -16,6 +16,7 @@ import ParkingForm from './ParkingForm'
 Geocode.setApiKey(`${process.env.REACT_APP_API_KEY}`)
 
 const MapContainer = () => {
+    const googleRef = useRef(null);
     const [inputAuto, setInputAuto] = useState();
     const [currentPosition, setCurrentPosition] = useState({
         address: "",
@@ -149,7 +150,7 @@ const MapContainer = () => {
         const newLng = (place.geometry.location.lng());
 
         console.log(place.geometry.location.lat());
-        console.log('input',place)
+        console.log('INPUTPLACE',place)
 
         setCurrentPosition({
             address: (address) ? address : "",
@@ -177,19 +178,14 @@ const MapContainer = () => {
 //Sending input text into ParkingForm
 //I tried to use useState but it triggers a submit each time.
 
-    let locationTwo = []
     
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const location = (event.target.value)
+    // const handleSubmit = (event) => {
+    //     const location = (event.target.value)
+    //     console.log('USEREF',googleRef.current.value)
+    //     console.log('LOCATIONTEST', location)
+    //     // setInputAuto(location)
+    // }
 
-        console.log('Location', location)
-        console.log('LocationTWo',locationTwo)
-        locationTwo.push(location)
-        // setInputAuto(location)
-    }
-
-console.log('L2',locationTwo)
     
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
@@ -220,8 +216,9 @@ console.log('L2',locationTwo)
             options={{
                 types: ["geocode", "establishment"],
             }}
+            // onChange={(event)=>handleSubmit(event)}
             onPlaceSelected={(place) => onPlaceSelected(place)}
-            onSubmit={handleSubmit}
+            ref={googleRef}
             
         />
         </GoogleMap>
@@ -239,7 +236,7 @@ console.log('L2',locationTwo)
                 />
             </div>
             <br /><br />
-            <ParkingForm info={locationTwo}/>
+            <ParkingForm info={googleRef?.current?.value}/>
         </div>
     )
 
